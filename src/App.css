@@ -5,17 +5,17 @@ img {
 }
 
 @media (max-width: 1200px) {
-  img { 
-    display: none ;
+  img {
+    display: none;
   }
-  html {
-      background: url('./../public/background.png') 100% 100% no-repeat; 
-      background-size: cover;
-      }  
+  .input-container {
+    background: url("./../public/background.png") 100% 100% no-repeat;
+    background-size: cover;
+  }
 }
 
 @media (max-width: 600px) {
-  html {
-    background-image: none; 
+  .input-container {
+    background-image: none;
   }
 }

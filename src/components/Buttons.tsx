@@ -1,11 +1,14 @@
-
 interface Butt {
-    value: string;
-    className: string;
+  value: string;
+  className: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
-export const Button =({value, className} : Butt) => {
-    return (
-        <button type="submit" className={className}> {value} </button>
-    )
-}
+export const Button = ({ value, className, onClick }: Butt) => {
+  return (
+    <button type='submit' className={className} onClick={onClick}>
+      {" "}
+      {value}{" "}
+    </button>
+  );
+};
