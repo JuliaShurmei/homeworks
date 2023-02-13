@@ -1,16 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../Buttons";
 import { Links } from "../Links";
 import { Input } from "../input";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { ErrorMessage } from "../error";
 import "./signUp.css";
 
+type Errors = Record<string, string>;
+
+const regularExpressionPassword =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
 export const SignUp = () => {
+  const [errors, setErrors] = useState<Errors>({
+    nameError: "",
+    lastNameError: "",
+    emailError: "",
+    passwordError: "",
+    confirmPasswordError: "",
+  });
+
   const [name, setName] = useState<string>("");
+
   const [lastName, setLastName] = useState<string>("");
+
   const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+
   const [password, setPassword] = useState<string>("");
+
+  const [confirmpassword, setConfirmPassword] = useState<string>("");
+
   const [state, setState] = useState<boolean>(false);
+
   const [passState, setPassState] = useState<boolean>(false);
 
   const toggleBtn = () => {
@@ -42,30 +66,75 @@ export const SignUp = () => {
         console.log(event.target.value);
         break;
       case "confirmpassword":
-        setPassword(event.target.value);
+        setConfirmPassword(event.target.value);
         console.log(event.target.value);
         break;
     }
   };
 
-  const handleConfirm = () => {
-    //const list = document.getElementsByClassName("input-container__text")[0];
-    //list.innerHTML = email + '\n' + password + '\n' + isChecked;
-    alert(
-      "Name: " +
-        name +
-        "\n" +
-        "Last Name: " +
-        lastName +
-        "\n" +
-        "Password: " +
-        password +
-        "\n" +
-        "Email: " +
-        email +
-        "\n"
-    );
+  const errorHandler = () => {
+    if (name.length < 3) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          nameError: "Name must contain more than 3 characters",
+        };
+      });
+      return;
+    }
+
+    if (lastName.length < 3) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          lastNameError: "Lastname must contain more than 3 characters",
+        };
+      });
+      return;
+    }
+
+    if (!password.match(regularExpressionPassword)) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          passwordError:
+            "Minimum eight characters, at least one uppercase letter, one lowercase letter and one number",
+        };
+      });
+      return;
+    }
+
+    if (confirmpassword !== password) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          confirmPasswordError: "Passwords do not match",
+        };
+      });
+      return;
+    }
+
+    setErrors({
+      nameError: "",
+      lastNameError: "",
+      emailError: "",
+      passwordError: "",
+      confirmPasswordError: "",
+    });
   };
+
+  useEffect(() => {
+    console.log("ERRORS CHANGED");
+    console.log(errors);
+  }, [errors]);
+
+  useEffect(() => {
+    if (!regexEmail.test(email) && email.length !== 0) {
+      setEmailError("Please enter correct email");
+    } else {
+      setEmailError("");
+    }
+  }, [email]);
 
   return (
     <div className='input-container'>
@@ -79,6 +148,9 @@ export const SignUp = () => {
         name={name}
         onChange={(event) => handleChange(event)}
       />
+      {errors.nameError.length > 0 ? (
+        <ErrorMessage errorField={errors.nameError} />
+      ) : null}
 
       <label htmlFor='lastName'> LastName </label>
       <Input
@@ -88,6 +160,9 @@ export const SignUp = () => {
         name={lastName}
         onChange={(event) => handleChange(event)}
       />
+      {errors.lastNameError.length > 0 ? (
+        <ErrorMessage errorField={errors.lastNameError} />
+      ) : null}
 
       <label htmlFor='email'> Email </label>
       <Input
@@ -97,6 +172,7 @@ export const SignUp = () => {
         name={email}
         onChange={(event) => handleChange(event)}
       />
+      {emailError !== "empty" && <ErrorMessage errorField={emailError} />}
 
       <div className='password-container'>
         <label htmlFor='password'> Password </label>
@@ -107,30 +183,37 @@ export const SignUp = () => {
           name={password}
           onChange={(event) => handleChange(event)}
         />
-
         <button className='btn' id='passw-btn' onClick={toggleBtn}>
           {state ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
         </button>
+        {errors.passwordError && (
+          <ErrorMessage errorField={errors.passwordError} />
+        )}
 
-        <label htmlFor='confirmpasswort'> Confirm Password </label>
+
+        <label htmlFor='confirmpassword'> Confirm Password </label>
         <Input
           className='input__sign-up'
           type={passState ? "text" : "password"}
           id='confirmpassword'
-          name={password}
+          name={confirmpassword}
           onChange={(event) => handleChange(event)}
         />
-
         <button className='btn' id='confpassw-btn' onClick={togglePassBtn}>
           {passState ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
         </button>
+
+        {errors.confirmPasswordError && (
+          <ErrorMessage errorField={errors.confirmPasswordError} />
+        )}
+
       </div>
 
       <div className='btn__container'>
         <Button
           className='btn-pink'
           value='Create Account'
-          onClick={handleConfirm}
+          onClick={errorHandler}
         />
         <Button className='btn-white' value='Login' />
       </div>

@@ -2,12 +2,29 @@ import { useState } from "react";
 import { Button } from "../Buttons";
 import { Links } from "../Links";
 import { Input } from "../input";
+import { useFormik } from "formik";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { basicSchema } from "../schemas";
 import "./login.css";
+import { off } from "process";
+
+const onSubmit = () => {
+  console.log("Submitted");
+};
 
 export const Login = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: basicSchema,
+      onSubmit,
+    });
+
+  console.log(errors);
+
   const [state, setState] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -19,63 +36,40 @@ export const Login = () => {
     setIsChecked((prevState) => !prevState);
   };
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    switch (event.target.id) {
-      case "email":
-        setEmail(event.target.value);
-        console.log(event.target.value);
-        break;
-      case "password":
-        setPassword(event.target.value);
-        console.log(event.target.value);
-        break;
-    }
-  };
-
-  const handleConfirm = () => {
-    //const list = document.getElementsByClassName("input-container__text")[0];
-    //list.innerHTML = email + '\n' + password + '\n' + isChecked;
-    alert(
-      "Password: " +
-        password +
-        "\n" +
-        "Email: " +
-        email +
-        "\n" +
-        "Remember me?: " +
-        isChecked
-    );
-  };
-
   return (
     <div className='input-container'>
       <div className='input-container__header'>
         Welcome back to Pretty Login
       </div>
       <div className='input-container__text'>It's great to have you back!</div>
-      <label htmlFor='email'> Email </label>
-      <Input
-        className='input__login'
-        type='email'
-        id='email'
-        name={email}
-        onChange={(event) => handleChange(event)}
-      />
-      <div className='password-container'>
-        <label htmlFor='password'> Password </label>
+      <form onSubmit={handleSubmit} autoComplete="off">
+        <label htmlFor='email'> Email </label>
         <Input
-          className='input__login'
-          type={state ? "text" : "password"}
-          id='password'
-          name={password}
-          onChange={(event) => handleChange(event)}
+          className={errors.email && touched.email ? "input-error" : "input__login"}
+          type='email'
+          id='email'
+          onChange={handleChange}
+          name='email'
+          value={values.email}
+          onBlur={handleBlur}
         />
-        <button className='btn' onClick={toggleBtn}>
-          {state ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-        </button>
-      </div>
+        {errors.email && touched.email && <div className='error'>{errors.email}</div>}
+        <div className='password-container'>
+          <label htmlFor='password'> Password </label>
+          <Input
+            className={errors.password && touched.password  ? "input-error" : "input__login"}
+            type={state ? "text" : "password"}
+            id='password'
+            onChange={handleChange}
+            name='password'
+            value={values.password}
+            onBlur={handleBlur}
+          />
+          <button className='btn' onClick={toggleBtn}>
+            {state ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+          </button>
+          {errors.password && touched.password && <div className='error'>{errors.password}</div>}
+        </div>
       <div className='remember__container'>
         <input
           type='checkbox'
@@ -86,14 +80,16 @@ export const Login = () => {
           onChange={toggleCheck}
         />
         <label htmlFor='remember'> Remember me? </label>
+
         <a href='#' className='after-text'>
           Forgot password?
         </a>
       </div>
       <div className='btn__container'>
-        <Button className='btn-pink' value='Login' onClick={handleConfirm} />
+        <Button className='btn-pink' value='Login'/>
         <Button className='btn-white' value='Create account' />
       </div>
+      </form>
       <div className='bottom-text'>
         Or login with
         <div className='bottom-text__container'>

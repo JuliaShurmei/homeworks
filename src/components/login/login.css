@@ -64,6 +64,16 @@ label {
   font-size: 15px;
 }
 
+.input-error {
+  border-color: #ff00ff;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  height: 40px;
+  padding-left: 7px;
+  font-size: 15px;
+}
+
 .password-container {
   margin-top: 10px;
   position: relative;
@@ -200,4 +210,8 @@ label {
   margin-left: -45px;
   margin-top: 4px;
   background-color: transparent;
+}
+
+.error {
+  color: red;
 }
